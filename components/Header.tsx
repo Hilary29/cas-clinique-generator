@@ -90,7 +90,7 @@ export function Header() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false)
 
     // Simuler l'état de l'utilisateur (false = non authentifié, true = authentifié)
-    const [isAuthenticated, setIsAuthenticated] = React.useState(false)
+    const [isAuthenticated, setIsAuthenticated] = React.useState(true)
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-gradient-to-br from-white-50 to-primary-50">

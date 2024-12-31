@@ -18,7 +18,8 @@ export default function Home() {
   return (
     <main className="bg-white-50"> 
     <Header />
-      <div className="space-y-[100px] "> 
+    <Hero />
+{/*       <div className="space-y-[100px] "> 
         <Hero />  
         <Features />
         <Benefits />
@@ -27,7 +28,7 @@ export default function Home() {
         <Faq />
       </div>
       <Cta />
-      <Footer />
+      <Footer /> */}
     </main>
   );
 }
