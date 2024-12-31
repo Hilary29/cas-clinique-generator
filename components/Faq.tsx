@@ -56,11 +56,11 @@ const Faq = () => {
   ];
 
   return (
-    <section id="faq" className="w-full py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-white-50">
+    <section id="faq" className="w-full pt-32  px-4 sm:px-6 md:px-8 bg-white-50">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-10 sm:mb-16">
           <p className="inline-block px-3 py-1 mb-3 text-sm font-semibold text-accent-600 ">
-            SUPPORT
+            RESULTATS
           </p>
           <p className="text-2xl sm:text-3xl md:text-4xl font-semibold font-satoshi text-black-100 mb-4">
             Frequently Asked Questions
