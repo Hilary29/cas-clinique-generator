@@ -74,7 +74,7 @@ const page = () => {
             <div className="grid gap-2">
               <Button
                 type="submit"
-                className="w-full font-semibold text-white-50 font-inter hover:bg-primary-800 bg-primary-700"
+                className="w-full font-semibold text-white-50 font-inter hover:bg-active-700 bg-active-600"
               >
                 Signup
               </Button>

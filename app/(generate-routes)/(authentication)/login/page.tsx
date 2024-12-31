@@ -50,7 +50,7 @@ const page = () => {
                   Password
                 </Label>
                 <Link
-                  href="#"
+                  href="/forget-password"
                   className="ml-auto inline-block text-sm underline text-accent-600"
                 >
                   Forgot your password?
