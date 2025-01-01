@@ -11,7 +11,7 @@ const HeroSection: React.FC = () => {
             Génerez facilement des cas cliniques.
           </p>
           <p className=" font-regular font-inter text-paragraph-md text-black-400  mb-6 sm:mb-8 md:mb-10 max-w-md sm:max-w-lg md:max-w-xl">
-            Track your crops in real-time, get AI-powered recommendations, and connect with buyers—all in one platform.
+            Sous titre
           </p>
           <div>
           <Link 

@@ -1,20 +1,17 @@
 "use client";
 import { Header } from "@/components/Header";
-import React, { useState } from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import React, { useState, useEffect } from "react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import axios from "axios";
+import clinicalCases from "../../../api/clinical-cases";
 
 const page = () => {
   return (
     <div>
       <Header />
       <section className="flex flex-col items-start w-full h-[824px] bg-gradient-to-br from-white-50 to-accent-100 px-4 sm:px-6 md:px-8 lg:px-28 ">
-        <div className="flex flex-col  w-full  justify-center   gap-8 sm:gap-12 md:gap-14 lg:gap-8 mx-auto  ">
+        <div className="flex flex-col w-full justify-center gap-8 sm:gap-12 md:gap-14 lg:gap-8 mx-auto ">
           <div className="flex flex-col gap-2 text-center ">
             <ResultAccordion />
           </div>
@@ -39,59 +36,76 @@ const ToggleIcon = ({ isOpen }: { isOpen: boolean }) => {
 };
 
 const ResultAccordion = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [clinicalCases, setClinicalCases] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [openItem, setOpenItem] = useState<string | null>(null);
 
   const toggleAccordion = (value: string) => {
     setOpenItem((prev) => (prev === value ? null : value));
   };
 
-  const faqItems = [
+  useEffect(() => {
+    const fetchResults = async () => {
+      try {
+        const response = await axios.get("/api/clinical-cases");
+        setClinicalCases(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des résultats", error);
+        setLoading(false);
+      }
+    };
+    fetchResults();
+  }, []);
+
+  // Fonction pour exporter les résultats en JSON
+  const handleExport = () => {
+    const blob = new Blob([JSON.stringify(clinicalCases, null, 2)], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "resultats_cliniques.json";
+    link.click();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p>Chargement des résultats...</p>
+      </div>
+    );
+  }
+
+  const faqItems = clinicalCases.length > 0 ? clinicalCases : [
     {
-      question: "What is Agrinet, and who is it for?",
-      answer:
-        "Agrinet is a comprehensive digital platform designed for farmers, agricultural businesses, and anyone involved in the agricultural sector. It provides tools for farm management, crop monitoring, market access, and data-driven decision making.",
-    },
-    {
-      question: "How does Agrinet help me sell my products?",
-      answer:
-        "Agrinet connects you directly with buyers, provides market insights, and offers tools to showcase your products. It streamlines the selling process, helping you reach a wider customer base and potentially secure better prices for your produce.",
-    },
-    {
-      question: "Do I need IoT devices to use Agrinet?",
-      answer:
-        "While IoT devices can enhance your experience with Agrinet by providing real-time data, they are not mandatory. You can still use many of Agrinet's features without IoT devices, including market access, crop planning, and basic farm management tools.",
-    },
-    {
-      question: "Is my data secure on Agrinet?",
-      answer:
-        "Yes, data security is a top priority at Agrinet. We use industry-standard encryption and security measures to protect your information. Your data is stored securely and is never shared without your explicit permission.",
-    },
-    {
-      question: "Can Agrinet help with crop disease identification?",
-      answer:
-        "Yes, Agrinet offers an AI-powered crop disease identification feature. You can upload photos of affected plants, and our system will analyze them to help identify potential diseases and suggest treatment options.",
-    },
-    {
-      question: "Is there a mobile app for Agrinet?",
-      answer:
-        "Yes, Agrinet is available as a mobile app for both iOS and Android devices. The app offers most of the features available on the web platform, allowing you to manage your farm on-the-go.",
-    },
+      question: "Aucun résultat",
+      answer: "Aucun cas clinique trouvé pour la période donnée.",
+    }
   ];
 
   return (
-    <section className="w-full pt-32  px-4 sm:px-6 md:px-8">
+    <section className="w-full pt-32 px-4 sm:px-6 md:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-10 sm:mb-16">
           <p className="inline-block px-3 py-1 mb-3 text-sm font-semibold text-accent-600 ">
-            RESULTATS
+            RÉSULTATS
           </p>
           <p className="text-2xl sm:text-3xl md:text-4xl font-semibold font-satoshi text-black-100 mb-4">
-            Resultats des cas cliniques demandés
+            Résultats des cas cliniques demandés
           </p>
           <p className="text-base sm:text-lg text-black-400 max-w-2xl mx-auto">
-            Find answers to the most common questions about Agrinet and how it
-            works.
+            Trouvez ici les informations sur les cas cliniques récupérés.
           </p>
+        </div>
+
+        {/* Bouton Exporter */}
+        <div className="flex justify-center mb-8">
+          <button
+            onClick={handleExport}
+            className="px-6 py-2 bg-primary-500 text-white-50 font-semibold font-inter rounded-md hover:bg-primary-400 transition duration-200"
+          >
+            Exporter
+          </button>
         </div>
 
         <Accordion type="single" collapsible className="w-full text-black-50 ">
