@@ -15,7 +15,7 @@ const HeroSection: React.FC = () => {
           </p>
           <div>
           <Link 
-            className="bg-[#2713a7]  text-white-50 font-semibold font-inter text-paragraph-md rounded-md py-3 px-5 mx-auto  sm:text-lg transition-colors duration-300 hover:bg-blue-900"
+            className="bg-primary-500  text-white-50 font-semibold font-inter text-paragraph-md rounded-md py-3 px-5 mx-auto  sm:text-lg transition-colors duration-300 hover:bg-primary-300"
             href={"/form"}>
             Commencer
           </Link>

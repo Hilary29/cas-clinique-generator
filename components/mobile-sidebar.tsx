@@ -4,7 +4,7 @@
 import { X } from 'lucide-react'
 import Image from "next/image"
 import Link from "next/link"
-import logo from "../public/images/logo.png"
+import logo from "../public/images/logo2.png"
 
 import {
   Sheet,
@@ -74,7 +74,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
           <Link className="flex items-center gap-2" href={"/"}>
           <Image src={logo} alt="Agrinet logo" className=" w-8 h-[24px] " />
             <p className="font-poppins text-heading-desktop-h6  font-semibold text-left text-secondary-700">
-              AgriNet
+              CasClinique
             </p>
           </Link>
 
