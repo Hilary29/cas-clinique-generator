@@ -21,8 +21,8 @@ const HeroSection: React.FC = () => {
           </p>
           <div>
             <Link 
-              className="bg-primary-500 text-white-50 font-semibold font-inter text-paragraph-md rounded-md py-3 px-5 mx-auto sm:text-lg transition-colors duration-300 hover:bg-primary-300"
-              href={"/form"}
+              className="bg-accent-700 text-white-50 font-semibold font-inter text-paragraph-md rounded-md py-3 px-5 mx-auto sm:text-lg transition-colors duration-300 hover:bg-accent-600"
+              href={"/login"}
               aria-label="Commencer la génération de cas cliniques"
             >
               Commencer

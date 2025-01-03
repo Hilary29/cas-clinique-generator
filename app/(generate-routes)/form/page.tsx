@@ -1,52 +1,112 @@
-"use client";
+"use client"; // Cela indique que le composant est un composant côté client
 
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
+import { useState } from "react";
+import { useRouter } from "next/navigation"; // Importation spécifique pour `app` directory
 import { Header } from "@/components/Header";
 
-const clinicalCaseSchema = z
-  .object({
-    startDate: z.date({ required_error: "La date de début est obligatoire." }),
-    endDate: z.date({ required_error: "La date de fin est obligatoire." }),
-    disease: z.string().optional(),
-    location: z.string().optional(),
-  })
-  .refine((data) => data.endDate >= data.startDate, {
-    message:
-      "La date de fin doit être postérieure ou égale à la date de début.",
-    path: ["endDate"],
-  });
+function FormPage() {
+  const [age, setAge] = useState<number | undefined>();
+  const [gender, setGender] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter(); // Initialiser useRouter
 
-type ClinicalCaseFormData = z.infer<typeof clinicalCaseSchema>;
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!startDate.trim() || !endDate.trim()) {
+      setError("La période (dates de début et de fin) est obligatoire.");
+      return;
+    }
+
+    if (new Date(startDate) > new Date(endDate)) {
+      setError("La date de début doit être antérieure à la date de fin.");
+      return;
+    }
+
+    setError("");
+    console.log({ age, gender, startDate, endDate });
+
+    // Rediriger vers la page /results après la soumission du formulaire
+    router.push('/results');
+  };
+
+  return (
+    <div className="p-8 bg-white-50 rounded-md w-[350px] sm:w-[580px]">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Champ pour la période (obligatoire) */}
+        <div className="flex flex-col">
+          <label className="text-left text-gray-700 font-medium mb-2">
+            Période <span className="text-red-500">*</span>
+          </label>
+          <div className="flex space-x-4">
+            <span className="my-auto">De</span>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${
+                error && (!startDate || !endDate) ? "border-red-500 focus:ring-red-500" : "focus:ring-blue-500"
+              }`}
+            />
+            <span className="my-auto">à</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${
+                error && (!startDate || !endDate) ? "border-red-500 focus:ring-red-500" : "focus:ring-blue-500"
+              }`}
+            />
+          </div>
+          {error && (!startDate || !endDate) && (
+            <p className="text-red-500 text-sm mt-1">La période est obligatoire et doit être valide.</p>
+          )}
+          {error && new Date(startDate) > new Date(endDate) && (
+            <p className="text-red-500 text-sm mt-1">La date de début doit être antérieure à la date de fin.</p>
+          )}
+        </div>
+
+        {/* Champ pour l'âge */}
+        <div className="flex flex-col">
+          <label className="text-left text-gray-700 font-medium mb-2">Age</label>
+          <input
+            type="number"
+            value={age}
+            onChange={(e) => setAge(Number(e.target.value))}
+            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Ex : 25"
+          />
+        </div>
+
+        {/* Champ pour le sexe */}
+        <div className="flex flex-col">
+          <label className="text-left text-gray-700 font-medium mb-2">Sexe</label>
+          <select
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Sélectionnez</option>
+            <option value="male">Homme</option>
+            <option value="female">Femme</option>
+          </select>
+        </div>
+
+        {/* Bouton de soumission */}
+        <button
+          type="submit"
+          className="w-full py-2.5 bg-accent-600 text-white-50 font-medium rounded-md hover:bg-accent-700 transition duration-200"
+        >
+          Soumettre
+        </button>
+      </form>
+    </div>
+  );
+}
 
 export default function ClinicalCaseForm() {
-  const router = useRouter(); // Utilisation de useRouter pour la redirection
-
-  const form = useForm<ClinicalCaseFormData>({
-    resolver: zodResolver(clinicalCaseSchema),
-    defaultValues: {
-      startDate: undefined,
-      endDate: undefined,
-      disease: "",
-      location: "",
-    },
-  });
-
-  async function onSubmit(values: ClinicalCaseFormData) {
-    try {
-      const response = await axios.post("/api/clinical-cases", values);
-      console.log("Résultats trouvés :", response.data);
-
-      // Redirection vers /results avec les données
-      router.push("/results");
-    } catch (error) {
-      console.error("Erreur lors de l’envoi :", error);
-    }
-  }
-
   return (
     <div>
       <Header />
@@ -56,83 +116,16 @@ export default function ClinicalCaseForm() {
             <section className="w-full pt-32 px-4 sm:px-6 md:px-8">
               <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-10 sm:mb-16">
-                  <p className="inline-block px-3 py-1 mb-3 text-sm font-semibold text-accent-600">
-                    FORMULAIRE
-                  </p>
                   <p className="text-2xl sm:text-3xl md:text-4xl font-semibold font-satoshi text-black-100 mb-4">
                     Entrez les caractéristiques de cas cliniques
                   </p>
+                  <p className="text-base sm:text-lg font-inter text-black-400 max-w-2xl mx-auto">
+                    Remplissez ce formulaire pour obtenir des cas cliniques adaptés à votre contexte.
+                  </p>
                 </div>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-6 bg-white-50 min-w-[300px] p-4 rounded-md shadow-6dp-v2 mx-24"
-                >
-                  <div className="space-y-8">
-                    <div className="flex flex-row gap-4 justify-between">
-                      <p className="font-semibold my-auto">Période</p>
-                      <div>
-                        <label htmlFor="startDate">Du </label>
-                        <input
-                          type="date"
-                          id="startDate"
-                          {...form.register("startDate", { valueAsDate: true })}
-                          className="border p-2"
-                        />
-                        <p>{form.formState.errors.startDate?.message}</p>
-                      </div>
-                      <div>
-                        <label htmlFor="endDate">Au </label>
-                        <input
-                          type="date"
-                          id="endDate"
-                          {...form.register("endDate", { valueAsDate: true })}
-                          className="border p-2"
-                        />
-                        <p>{form.formState.errors.endDate?.message}</p>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex flex-row gap-4 justify-between">
-                        <label
-                          htmlFor="disease"
-                          className="font-semibold my-auto"
-                        >
-                          Maladie
-                        </label>
-                        <input
-                          id="disease"
-                          {...form.register("disease")}
-                          placeholder="Grippe"
-                          className="border p-2"
-                        />
-                      </div>
-                      <p>{form.formState.errors.disease?.message}</p>
-                    </div>
-                    <div>
-                      <div className="flex flex-row justify-between">
-                        <label
-                          htmlFor="location"
-                          className="font-semibold my-auto"
-                        >
-                          Localisation
-                        </label>
-                        <input
-                          id="location"
-                          {...form.register("location")}
-                          placeholder="Yaoundé"
-                          className="border p-2"
-                        />
-                      </div>
-                      <p>{form.formState.errors.location?.message}</p>
-                    </div>
-                  </div>
-                  <button
-                    type="submit"
-                    className="bg-primary-500 hover:bg-primary-300 font-inter font-semibold text-white-50 rounded-md px-3 py-2 transition duration-200"
-                  >
-                    Rechercher
-                  </button>
-                </form>
+                <div className="flex flex-col items-center mx-auto">
+                  <FormPage />
+                </div>
               </div>
             </section>
           </div>

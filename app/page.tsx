@@ -1,7 +1,7 @@
 "use client"
  
 import Footer from "@/components/Footer";
-import { Header } from "@/components/Header";
+import { HeaderHome } from "@/components/HeaderHome";
 import Hero from "@/components/Hero";
 /* import { ModeToggle } from "@/components/ModeToggle"; */ //Changement de theme Dark light
 import * as React from "react"
@@ -11,7 +11,7 @@ import * as React from "react"
 export default function Home() {
   return (
     <main className=""> 
-    <Header />
+    <HeaderHome />
     <Hero />
 {/*       <div className="space-y-[100px] "> 
         <Hero />  
