@@ -14,7 +14,18 @@ import Image from "next/image";
 
 const page = () => {
   return (
-    <div>
+    <div className="flex justify-center items-center">
+      <div className="flex items-stretch border rounded-lg overflow-hidden">
+        {/* Section Image */}
+        <div className="flex items-center justify-center">
+          <Image
+            src="/images/immm.png" 
+            alt="Signup Illustration"
+            width={350} 
+            height={500} 
+            className="h-full w-auto object-cover bg-accent-200"
+          />
+        </div>
       <Card className="mx-auto w-[25%] min-w-[350px] bg-white-50 border-none rounded-sm">
         <CardHeader>
           <CardTitle className="text-2xl text-secondary-500 mx-auto">
@@ -66,7 +77,7 @@ const page = () => {
             <div className="grid gap-2">
               <Button
                 type="submit"
-                className="w-full font-semibold text-white-50 font-inter hover:bg-primary-800 bg-primary-700"
+                className="w-full font-semibold text-white-50 font-inter hover:bg-active-700 bg-active-600"
               >
                 Login
               </Button>
@@ -87,13 +98,14 @@ const page = () => {
           </div>
           <div className="mt-4 text-center text-sm text-accent-600">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="underline">
+            <Link href="/register" className="underline">
               Sign up
             </Link>
           </div>
         </CardContent>
       </Card>
     </div>
+  </div>
   );
 };
 
