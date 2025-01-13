@@ -29,14 +29,14 @@ const HeroSection: React.FC = () => {
             </Link>
           </div>
         </div>
-        <div className="w-[704px] h-[580px] aspect-video rounded-[32px] overflow-hidden">
+        <div className="w-[604px] h-[580px] aspect-video rounded-[32px] overflow-hidden">
           <Image
             src="/images/hero3.png"
             alt="Imgaen illustrative"
             width={704} 
             height={580} 
             className="w-full h-full object-cover"
-            priority // Pour optimiser le chargement de l'image
+            priority
           />
         </div>
       </div>

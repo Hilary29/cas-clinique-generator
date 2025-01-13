@@ -16,7 +16,7 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <head />
         <body>
-          <main className="from-white-50 to-accent-100">
+          <main className="bg-gradient-to-br from-white-50 to-accent-100">
             {children}
           </main>
         </body>
