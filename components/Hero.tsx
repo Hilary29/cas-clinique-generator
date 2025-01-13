@@ -5,7 +5,7 @@ import Link from 'next/link';
 const HeroSection: React.FC = () => {
   return (
     <section 
-      className="flex flex-col items-start w-full bg-gradient-to-br from-white-50 to-accent-100 px-4 sm:px-6 md:px-8 lg:px-28 pt-20 md:pt-24 pb-6"
+      className="flex flex-col items-start w-full  px-4 sm:px-6 md:px-8 lg:px-28 pt-20 md:pt-24 pb-6"
       aria-label="Héros"
     >
       <div className="flex flex-row w-full justify-between gap-8 sm:gap-12 md:gap-14 lg:gap-8">
