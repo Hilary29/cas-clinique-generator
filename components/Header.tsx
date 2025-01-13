@@ -18,7 +18,7 @@ import {
 import { MobileSidebar } from "./mobile-sidebar"
 import LanguageSwitcher from "./LanguageSwitcher"
 
-import logo from "../public/images/logo.png"
+import logo from "../public/images/logo2.png"
 
 
 
@@ -93,25 +93,25 @@ export function Header() {
     const [isAuthenticated, setIsAuthenticated] = React.useState(false)
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-gradient-to-br from-white-50 to-primary-50">
+    <header className="fixed top-0 left-0 w-full z-50 bg-gradient-to-br from-white-50 to-accent-50">
       <div className="mx-auto flex justify-between items-center px-2 lg:px-16 py-4 md:py-6 ">
         <div className="flex">
-          <div className="xl:hidden flex mr-4 text-black-300 hover:bg-primary-200 hover:text-secondary-200 hover:rounded-md transition duration-300">
+          <div className="xl:hidden flex mr-4 text-black-300 hover:bg-accent-200 hover:text-secondary-200 hover:rounded-md transition duration-300">
             <Hamburger
               toggled={isSidebarOpen}
               toggle={setIsSidebarOpen}
               size={26}
             />
           </div>
-          <Link className="flex items-center gap-2" href={"/"}>
-            <Image src={logo} alt="Agrinet logo" className="w-6 h-[20px] sm:w-8 sm:h-[24px] lg:w-10 lg:h-[36px]" />
-            <p className="font-poppins text-paragraph-md sm:text-heading-desktop-h6 lg:text-heading-desktop-h4 font-semibold text-left text-secondary-700">
-              AgriNet
+          <Link className="flex items-center" href={"/"}>
+            <Image src={logo} alt="Agrinet logo" className="w-12 h-[28px] sm:w-8 sm:h-[24px] lg:w-16 lg:h-[48px]" />
+            <p className="font-poppins text-paragraph-md sm:text-heading-desktop-h6 lg:text-heading-desktop-h4 font-semibold text-left text-accent-900">
+              CasClinique
             </p>
           </Link>
         </div>
 
-        <nav className="flex gap-[24px] font-medium font-inter text-paragraph-md ">
+{/*         <nav className="flex gap-[24px] font-medium font-inter text-paragraph-md ">
    
           <Link href="#features" className="hidden xl:flex text-black-100 hover:text-accent-500 transition-colors duration-300">
             Features
@@ -179,7 +179,7 @@ export function Header() {
           <Link href="#faq" className="hidden xl:flex text-black-100  hover:text-accent-500 transition-colors duration-300">
             FAQs
           </Link>
-        </nav>
+        </nav> */}
 
         {/* Conditionnel : Afficher Login/Sign up si non authentifié */}
         <div className="flex items-center  gap-[18px] font-inter text-paragraph-sm md:text-paragraph-md ">
