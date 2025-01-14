@@ -1,295 +1,444 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, FormEvent } from 'react'
+import { useRouter } from 'next/navigation'
 import { Header } from "@/components/Header";
 
+type FormData = {
+  startDate: string
+  endDate: string
+  symptoms: string
+  disease: string
+  allergies: string
+  familyHistory: string
+  obstetricalHistory: boolean
+  surgery: boolean
+  currentTreatment: string
+  physicalDiagnosis: string
+  travel: boolean
+  physicalActivity: boolean
+  dependency: boolean
+}
+
+const symptomsList = [
+  'Fièvre',
+  'Toux',
+  'Fatigue',
+  'Essoufflement',
+  'Mal de tête',
+  'Nausées',
+  'Vomissements',
+  'Douleurs musculaires',
+  'Perte d’appétit',
+  'Frissons',
+  'Douleurs thoraciques',
+  'Perte de l’odorat',
+  'Perte du goût',
+  'Démangeaisons',
+  'Étourdissements',
+  'Douleurs abdominales',
+];
+
+const diseasesList = [
+  'Hypertension',
+  'Diabète',
+  'Asthme',
+  'Maladie cardiaque',
+  'Cancer',
+  'Insuffisance rénale',
+  'Hépatite',
+  'Sclérose en plaques',
+  'Tuberculose',
+  'VIH/SIDA',
+  'Arthrite rhumatoïde',
+  'Maladie de Parkinson',
+  'Alzheimer',
+  'Migraine chronique',
+  'Ostéoporose',
+];
+
+const allergiesList = [
+  'Pollen',
+  'Poussière',
+  'Pénicilline',
+  'Arachides',
+  'Latex',
+  'Œufs',
+  'Lait',
+  'Fruits de mer',
+  'Noix',
+  'Soja',
+  'Blé',
+  'Médicaments spécifiques',
+  'Poils d’animaux',
+  'Moisissures',
+  'Produits chimiques',
+];
+
+const diagnosisList = [
+  'Normal',
+  'Sons cardiaques anormaux',
+  'Sifflements',
+  'Sensibilité abdominale',
+  'Éruption cutanée',
+  'Inflammation des articulations',
+  'Douleur localisée',
+  'Palpitations',
+  'Gonflement des ganglions lymphatiques',
+  'Pression artérielle élevée',
+  'Tachycardie',
+  'Bradycardie',
+  'Troubles respiratoires',
+  'Fièvre persistante',
+  'Jaunisse',
+];
+
+const familyHistoryList = [
+  'Diabète',
+  'Maladie cardiaque',
+  'Cancer',
+  'Hypertension',
+  'Asthme',
+  'Arthrite',
+  'Accidents vasculaires cérébraux (AVC)',
+  'Dépression',
+  'Troubles bipolaires',
+  'Maladie de Crohn',
+  'Sclérose en plaques',
+  'Anémie falciforme',
+  'Hypercholestérolémie',
+  'Obésité',
+  'Maladies auto-immunes',
+];
+
 function FormPage() {
-  const commonSymptoms = ["Fièvre", "Fatigue", "Douleur", "Nausée", "Toux"];
-  const commonDiseases = ["Diabète", "Hypertension", "Asthme", "Arthrite"];
-  const commonFamilyHistory = ["Cancer", "Maladie cardiaque", "Diabète", "Hypertension"];
-  const commonDiagnoses = ["Grippe", "Infection urinaire", "Migraine", "Lombalgie"];
+  const router = useRouter()
+  const [formData, setFormData] = useState<FormData>({
+    startDate: '',
+    endDate: '',
+    symptoms: '',
+    disease: '',
+    allergies: '',
+    familyHistory: '',
+    obstetricalHistory: false,
+    surgery: false,
+    currentTreatment: '',
+    physicalDiagnosis: '',
+    travel: false,
+    physicalActivity: false,
+    dependency: false
+  })
 
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [symptoms, setSymptoms] = useState("");
-  const [disease, setDisease] = useState("");
-  const [allergies, setAllergies] = useState("");
-  const [familyHistory, setFamilyHistory] = useState("");
-  const [obstetricHistory, setObstetricHistory] = useState("");
-  const [surgery, setSurgery] = useState("");
-  const [currentTreatment, setCurrentTreatment] = useState("");
-  const [physicalDiagnosis, setPhysicalDiagnosis] = useState("");
-  const [travel, setTravel] = useState("");
-  const [physicalActivity, setPhysicalActivity] = useState("");
-  const [addiction, setAddiction] = useState("");
-  const [error, setError] = useState("");
-  const router = useRouter();
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+    }))
+  }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    try {
+      const response = await fetch('http://localhost:3000/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
 
-    if (!startDate.trim() || !endDate.trim()) {
-      setError("La période (dates de début et de fin) est obligatoire.");
-      return;
+      if (response.ok) {
+        const result = await response.json()
+        console.log('Clinical cases generated:', result)
+        router.push('/results')
+      } else {
+        console.error('Failed to generate clinical cases')
+      }
+    } catch (error) {
+      console.error('Error:', error)
     }
-
-    if (new Date(startDate) > new Date(endDate)) {
-      setError("La date de début doit être antérieure à la date de fin.");
-      return;
-    }
-
-    setError("");
-    console.log({
-      startDate,
-      endDate,
-      symptoms,
-      disease,
-      allergies,
-      familyHistory,
-      obstetricHistory,
-      surgery,
-      currentTreatment,
-      physicalDiagnosis,
-      travel,
-      physicalActivity,
-      addiction,
-    });
-
-    /* router.push('/results'); */
-  };
-
+  }
 
   return (
-    <div className="p-8 bg-white-50 rounded-md w-full max-w-3xl">
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Section Informations */}
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Informations</h2>
-          <div className="space-y-4">
-            {/* Période */}
-            <div className="flex flex-col">
-              <label className="text-left text-gray-700 font-medium mb-2">
-                Période <span className="text-red-500">*</span>
-              </label>
-              <div className="flex space-x-4">
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${
-                    error && (!startDate || !endDate) ? "border-red-500 focus:ring-red-500" : "focus:ring-blue-500"
-                  }`}
-                />
-                <span className="my-auto">à</span>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${
-                    error && (!startDate || !endDate) ? "border-red-500 focus:ring-red-500" : "focus:ring-blue-500"
-                  }`}
-                />
-              </div>
-              {error && (!startDate || !endDate) && (
-                <p className="text-red-500 text-sm mt-1">La période est obligatoire et doit être valide.</p>
-              )}
-              {error && new Date(startDate) > new Date(endDate) && (
-                <p className="text-red-500 text-sm mt-1">La date de début doit être antérieure à la date de fin.</p>
-              )}
-            </div>
+    <form onSubmit={handleSubmit} className="w-[500px] mx-auto p-4 bg-white-50 rounded-md shadow-6dp-v2">
+      <div className="grid grid-cols-1  gap-8">       
+        <div className="flex  gap-4 justify-between">
+        <div >
+          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">De</label>
+          <input
+            type="date"
+            id="startDate"
+            name="startDate"
+            value={formData.startDate}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            required
+          />
+        </div>
 
-            {/* Symptômes */}
-            <div className="flex flex-col">
-              <label className="text-left text-gray-700 font-medium mb-2">Symptômes</label>
-              <select
-                value={symptoms}
-                onChange={(e) => setSymptoms(e.target.value)}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value=""></option>
-                {commonSymptoms.map((symptom) => (
-                  <option key={symptom} value={symptom.toLowerCase()}>{symptom}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </section>
+        <div>
+          <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">A</label>
+          <input
+            type="date"
+            id="endDate"
+            name="endDate"
+            value={formData.endDate}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            required
+          />
+        </div>
+        </div>
 
-        {/* Section Antécédents Médicaux */}
-        <div className="flex flex-col p-4 border rounded-md">
-          <h3 className="text-lg font-medium mb-4">Antécédents médicaux</h3>
 
-          <div className="space-y-4">
-            {/* Maladie */}
-            <div>
-              <label className="text-gray-700 font-medium mb-2">Maladie</label>
-              <select
-                value={disease}
-                onChange={(e) => setDisease(e.target.value)}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value=""></option>
-                {commonDiseases.map((disease) => (
-                  <option key={disease} value={disease.toLowerCase()}>{disease}</option>
-                ))}
-              </select>
-            </div>
+        <div>
+          <label htmlFor="symptoms" className="block text-sm font-medium text-gray-700">Symptoms</label>
+          <select
+            id="symptoms"
+            name="symptoms"
+            value={formData.symptoms}
+            onChange={handleChange}
+            className="mt-1 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          >
+            <option value="">Select symptom</option>
+            {symptomsList.map(symptom => (
+              <option key={symptom} value={symptom}>{symptom}</option>
+            ))}
+          </select>
+        </div>
 
-            {/* Allergies */}
-            <div>
-              <label className="text-gray-700 font-medium mb-2">Allergies</label>
-              <select
-                value={allergies}
-                onChange={(e) => setAllergies(e.target.value)}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value=""></option>
-                <option value="arachide">Arachide</option>
-                <option value="lait">Lait</option>
-                <option value="poisson">Poisson</option>
-                <option value="banane">Banane</option>
-              </select>
-            </div>
+        <div>
+          <label htmlFor="disease" className="block text-sm font-medium text-gray-700">Disease</label>
+          <select
+            id="disease"
+            name="disease"
+            value={formData.disease}
+            onChange={handleChange}
+            className="mt-1 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          >
+            <option value="">Select disease</option>
+            {diseasesList.map(disease => (
+              <option key={disease} value={disease}>{disease}</option>
+            ))}
+          </select>
+        </div>
 
-            {/* Antécédents familiaux */}
-            <div>
-              <label className="text-gray-700 font-medium mb-2">Antécédents familiaux</label>
-              <select
-                value={familyHistory}
-                onChange={(e) => setFamilyHistory(e.target.value)}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value=""></option>
-                {commonFamilyHistory.map((history) => (
-                  <option key={history} value={history.toLowerCase().replace(' ', '')}>{history}</option>
-                ))}
-              </select>
-            </div>
+        <div>
+          <label htmlFor="allergies" className="block text-sm font-medium text-gray-700">Allergies</label>
+          <select
+            id="allergies"
+            name="allergies"
+            value={formData.allergies}
+            onChange={handleChange}
+            className="mt-1 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          >
+            <option value="">Select allergy</option>
+            {allergiesList.map(allergy => (
+              <option key={allergy} value={allergy}>{allergy}</option>
+            ))}
+          </select>
+        </div>
 
-            {/* Antécédents obstétricaux */}
-            <div className="flex flex-col">
-              <label className="text-left text-gray-700 font-medium mb-2">Antécédents obstétricaux</label>
-              <select
-                value={obstetricHistory}
-                onChange={(e) => setObstetricHistory(e.target.value)}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Sélectionnez</option>
-                <option value="oui">Oui</option>
-                <option value="non">Non</option>
-              </select>
-            </div>
+        <div>
+          <label htmlFor="familyHistory" className="block text-sm font-medium text-gray-700">Family History</label>
+          <select
+            id="familyHistory"
+            name="familyHistory"
+            value={formData.familyHistory}
+            onChange={handleChange}
+            className="mt-1 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          >
+            <option value="">Select family history</option>
+            {familyHistoryList.map(history => (
+              <option key={history} value={history}>{history}</option>
+            ))}
+          </select>
+        </div>
 
-            {/* Chirurgie */}
-            <div className="flex flex-col">
-              <label className="text-left text-gray-700 font-medium mb-2">Chirurgie</label>
-              <select
-                value={surgery}
-                onChange={(e) => setSurgery(e.target.value)}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Sélectionnez</option>
-                <option value="oui">Oui</option>
-                <option value="non">Non</option>
-              </select>
-            </div>
+        <div>
+          <label htmlFor="obstetricalHistory" className="block text-sm font-medium text-gray-700">Obstetrical History</label>
+          <div className="mt-2">
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="obstetricalHistory"
+                value="true"
+                checked={formData.obstetricalHistory === true}
+                onChange={() => setFormData(prev => ({ ...prev, obstetricalHistory: true }))}
+                className="form-radio h-4 w-4 text-indigo-600"
+              />
+              <span className="ml-2">Yes</span>
+            </label>
+            <label className="inline-flex items-center ml-6">
+              <input
+                type="radio"
+                name="obstetricalHistory"
+                value="false"
+                checked={formData.obstetricalHistory === false}
+                onChange={() => setFormData(prev => ({ ...prev, obstetricalHistory: false }))}
+                className="form-radio h-4 w-4 text-indigo-600"
+              />
+              <span className="ml-2">No</span>
+            </label>
           </div>
         </div>
 
-        {/* Section Traitement en cours */}
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Traitement en cours</h2>
-          <div className="flex flex-col">
-            <label className="text-left text-gray-700 font-medium mb-2">Traitement actuel</label>
-            <input
-              type="text"
-              value={currentTreatment}
-              onChange={(e) => setCurrentTreatment(e.target.value)}
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Ex : antibiotiques, antidouleurs"
-            />
-          </div>
-        </section>
-
-        {/* Section Diagnostic physique */}
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Diagnostic physique</h2>
-          <div className="flex flex-col">
-            <label className="text-left text-gray-700 font-medium mb-2">Diagnostic</label>
-            <select
-              value={physicalDiagnosis}
-              onChange={(e) => setPhysicalDiagnosis(e.target.value)}
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value=""></option>
-              {commonDiagnoses.map((diagnosis) => (
-                <option key={diagnosis} value={diagnosis.toLowerCase()}>{diagnosis}</option>
-              ))}
-            </select>
-          </div>
-        </section>
-
-        {/* Section Mode de vie */}
-        <div className="flex flex-col p-4 border rounded-md">
-          <h3 className="text-lg font-medium mb-4">Mode de vie</h3>
-
-          <div className="space-y-4">
-            {/* Voyage */}
-            <div>
-              <label className="text-gray-700 font-medium mb-2">Voyage</label>
-              <select
-                value={travel}
-                onChange={(e) => setTravel(e.target.value)}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value=""></option>
-                <option value="oui">Oui</option>
-                <option value="non">Non</option>
-              </select>
-            </div>
-
-            {/* Activité physique */}
-            <div>
-              <label className="text-gray-700 font-medium mb-2">Activité physique</label>
-              <select
-                value={physicalActivity}
-                onChange={(e) => setPhysicalActivity(e.target.value)}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value=""></option>
-                <option value="oui">Oui</option>
-                <option value="non">Non</option>
-              </select>
-            </div>
-
-            {/* Addiction */}
-            <div>
-              <label className="text-gray-700 font-medium mb-2">Addiction</label>
-              <select
-                value={addiction}
-                onChange={(e) => setAddiction(e.target.value)}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value=""></option>
-                <option value="oui">Oui</option>
-                <option value="non">Non</option>
-              </select>
-            </div>
+        <div>
+          <label htmlFor="surgery" className="block text-sm font-medium text-gray-700">Surgery</label>
+          <div className="mt-2">
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="surgery"
+                value="true"
+                checked={formData.surgery === true}
+                onChange={() => setFormData(prev => ({ ...prev, surgery: true }))}
+                className="form-radio h-4 w-4 text-indigo-600"
+              />
+              <span className="ml-2">Yes</span>
+            </label>
+            <label className="inline-flex items-center ml-6">
+              <input
+                type="radio"
+                name="surgery"
+                value="false"
+                checked={formData.surgery === false}
+                onChange={() => setFormData(prev => ({ ...prev, surgery: false }))}
+                className="form-radio h-4 w-4 text-indigo-600"
+              />
+              <span className="ml-2">No</span>
+            </label>
           </div>
         </div>
 
-        {/* Bouton de soumission */}
+        <div>
+          <label htmlFor="currentTreatment" className="block text-sm font-medium text-gray-700">Current Treatment</label>
+          <input
+            type="text"
+            id="currentTreatment"
+            name="currentTreatment"
+            value={formData.currentTreatment}
+            onChange={handleChange}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="physicalDiagnosis" className="block text-sm font-medium text-gray-700">Physical Diagnosis</label>
+          <select
+            id="physicalDiagnosis"
+            name="physicalDiagnosis"
+            value={formData.physicalDiagnosis}
+            onChange={handleChange}
+            className="mt-1 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          >
+            <option value="">Select physical diagnosis</option>
+            {diagnosisList.map(diagnosis => (
+              <option key={diagnosis} value={diagnosis}>{diagnosis}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Travel</label>
+          <div className="mt-2">
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="travel"
+                value="true"
+                checked={formData.travel === true}
+                onChange={() => setFormData(prev => ({ ...prev, travel: true }))}
+                className="form-radio h-4 w-4 text-indigo-600"
+              />
+              <span className="ml-2">Yes</span>
+            </label>
+            <label className="inline-flex items-center ml-6">
+              <input
+                type="radio"
+                name="travel"
+                value="false"
+                checked={formData.travel === false}
+                onChange={() => setFormData(prev => ({ ...prev, travel: false }))}
+                className="form-radio h-4 w-4 text-indigo-600"
+              />
+              <span className="ml-2">No</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Physical Activity</label>
+          <div className="mt-2">
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="physicalActivity"
+                value="true"
+                checked={formData.physicalActivity === true}
+                onChange={() => setFormData(prev => ({ ...prev, physicalActivity: true }))}
+                className="form-radio h-4 w-4 text-indigo-600"
+              />
+              <span className="ml-2">Yes</span>
+            </label>
+            <label className="inline-flex items-center ml-6">
+              <input
+                type="radio"
+                name="physicalActivity"
+                value="false"
+                checked={formData.physicalActivity === false}
+                onChange={() => setFormData(prev => ({ ...prev, physicalActivity: false }))}
+                className="form-radio h-4 w-4 text-indigo-600"
+              />
+              <span className="ml-2">No</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Dependency</label>
+          <div className="mt-2">
+            <label className="inline-flex items-center">
+              <input
+                type="radio"
+                name="dependency"
+                value="true"
+                checked={formData.dependency === true}
+                onChange={() => setFormData(prev => ({ ...prev, dependency: true }))}
+                className="form-radio h-4 w-4 text-indigo-600"
+              />
+              <span className="ml-2">Yes</span>
+            </label>
+            <label className="inline-flex items-center ml-6">
+              <input
+                type="radio"
+                name="dependency"
+                value="false"
+                checked={formData.dependency === false}
+                onChange={() => setFormData(prev => ({ ...prev, dependency: false }))}
+                className="form-radio h-4 w-4 text-indigo-600"
+              />
+              <span className="ml-2">No</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6">
         <button
           type="submit"
-          className="w-full py-2.5 bg-accent-600 text-white-50 font-medium rounded-md hover:bg-accent-700 transition duration-200"
+          className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white-50 bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          Soumettre
+          Generate Clinical Cases
         </button>
-      </form>
-    </div>
-  );
+      </div>
+    </form>
+  )
 }
+
+
+
 
 export default function ClinicalCaseForm() {
   return (
@@ -305,7 +454,8 @@ export default function ClinicalCaseForm() {
                     Entrez les caractéristiques de cas cliniques
                   </p>
                   <p className="text-base sm:text-lg font-inter text-black-400 max-w-2xl mx-auto">
-                    Remplissez ce formulaire pour obtenir des cas cliniques adaptés à votre contexte.
+                    Remplissez ce formulaire pour obtenir des cas cliniques
+                    adaptés à votre contexte.
                   </p>
                 </div>
                 <div className="flex flex-col items-center mx-auto">
@@ -319,4 +469,3 @@ export default function ClinicalCaseForm() {
     </div>
   );
 }
-
