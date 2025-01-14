@@ -80,7 +80,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
           </SheetTitle>
         </SheetHeader>
-        <div className="flex flex-col gap-4 mt-4 text-paragraph-md font-inter font-regular">
+        <div className="flex flex-col gap-8 mt-8 ml-10 text-paragraph-md font-inter font-regular">
           <Link
             href="/"
             className=" hover:text-accent-500 transition-colors"
@@ -88,80 +88,34 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
           >
             Home
           </Link>
+
           <Link
-            href="#features"
+            href="/form"
             className=" hover:text-accent-500 transition-colors"
             onClick={onClose}
           >
-            Features
-          </Link>
-          <Accordion type="single" collapsible>
-            <AccordionItem value="solutions">
-              <AccordionTrigger>Solutions</AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col gap-2 pl-4 ">
-                  {components.map((component) => (
-                    <Link
-                      key={component.title}
-                      href={component.href}
-                      className="hover:text-accent-500 transition-colors duration-300"
-                      onClick={onClose}
-                    >
-                      {component.title}
-                    </Link>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="education">
-              <AccordionTrigger>Education</AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col gap-2 pl-4">
-                  <Link
-                    href="/docs"
-                    className="hover:text-accent-500 transition-colors"
-                    onClick={onClose}
-                  >
-                    Introduction
-                  </Link>
-                  <Link
-                    href="/docs/installation"
-                    className="hover:text-accent-500 transition-colors"
-                    onClick={onClose}
-                  >
-                    Installation
-                  </Link>
-                  <Link
-                    href="/docs/primitives/typography"
-                    className="hover:text-accent-500 transition-colors"
-                    onClick={onClose}
-                  >
-                    Typography
-                  </Link>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-          <Link
-            href="/marketplace"
-            className=" hover:text-accent-500 transition-colors"
-            onClick={onClose}
-          >
-            Marketplace
+            Formulaire
           </Link>
           <Link
-            href="/pricing"
+            href="/result"
             className=" hover:text-accent-500 transition-colors"
             onClick={onClose}
           >
-            Pricing
+            Resultat
           </Link>
           <Link
-            href="#faq"
+            href="/history"
             className=" hover:text-accent-500 transition-colors"
             onClick={onClose}
           >
-            FAQs
+            Historique
+          </Link>
+          <Link
+            href="/help"
+            className=" hover:text-accent-500 transition-colors"
+            onClick={onClose}
+          >
+            Aide
           </Link>
         </div>
       </SheetContent>
