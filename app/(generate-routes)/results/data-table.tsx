@@ -249,7 +249,7 @@ export function DataTable() {
   };
 
   return (
-    <div className="w-full bg-white-50 p-2 rounded-md shadow-md font-inter">
+    <div className="w-[90%] mx-auto bg-white-50 p-2 rounded-md shadow-6dp-v2 font-inter">
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
           <div className="bg-white-50 p-4 rounded-md shadow-lg text-center">

@@ -161,7 +161,7 @@ function FormPage() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-[500px] mx-auto p-4 bg-white-50 rounded-md shadow-6dp-v2">
+    <form onSubmit={handleSubmit} className="w-[500px] mx-auto p-4 bg-gray-50 rounded-md shadow-6dp-v2">
       <div className="grid grid-cols-1  gap-8">       
         <div className="flex  gap-4 justify-between">
         <div >
@@ -444,7 +444,7 @@ export default function ClinicalCaseForm() {
   return (
     <div>
       <Header />
-      <section className="flex flex-col items-start w-full min-h-screen bg-gradient-to-br from-white-50 to-accent-100 px-4 sm:px-6 md:px-8 lg:px-28 py-12">
+      <section className="flex flex-col items-start w-full min-h-screen bg-white-50 px-4 sm:px-6 md:px-8 lg:px-28 py-16 ">
         <div className="flex flex-col w-full justify-center gap-8 sm:gap-12 md:gap-14 lg:gap-8 mx-auto">
           <div className="flex flex-col gap-2 ">
             <section className="w-full pt-12 px-4 sm:px-6 md:px-8">

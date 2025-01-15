@@ -11,7 +11,7 @@ const page = () => {
   return (
     <div>
       <Header />
-      <section className="flex flex-col items-start w-full h-full bg-gradient-to-br from-white-50 to-accent-100 px-4 sm:px-6 md:px-8 lg:px-28 ">
+      <section className="flex flex-col items-start w-full h-full bg-white-50 px-4 sm:px-6 md:px-8 lg:px-28 ">
         <div className="flex flex-col w-full justify-center gap-8 sm:gap-12 md:gap-14 lg:gap-8 mx-auto ">
           <div className="flex flex-col gap-2 text-center ">
           <section className="w-full pt-32 px-4 sm:px-6 md:px-8">
@@ -27,7 +27,7 @@ const page = () => {
             Trouvez ici les informations sur les cas cliniques récupérés.
           </p>
         </div>
-        <div className="max-w-[65%] mx-auto py-4 pb-4">
+        <div className="w-full mx-auto py-4 pb-4">
         <DataTable/>
         </div>
             
