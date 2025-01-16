@@ -1,8 +1,40 @@
 "use client";
-
-import { useState, FormEvent } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useState, FormEvent, ReactElement } from 'react';
+import { useRouter } from 'next/navigation';
 import { Header } from "@/components/Header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FaRunning } from 'react-icons/fa';
+import { ClinicalCase } from '../../../types/ClinicalCase';
+import { 
+  Calendar, 
+  Thermometer, 
+  Activity, 
+  AlertCircle, 
+  Heart, 
+  Users, 
+  Waypoints,
+  Pill,
+  Stethoscope,
+  Plane,
+  Wine
+} from 'lucide-react';
+
+interface SelectFieldProps {
+  icon: ReactElement;
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  options: string[];
+}
+
+interface RadioFieldProps {
+  icon: ReactElement;
+  label: string;
+  name: string;
+  value: boolean;
+  onChange: (updater: (prev: FormData) => FormData) => void;
+}
 
 type FormData = {
   startDate: string
@@ -111,6 +143,61 @@ const familyHistoryList = [
   'Maladies auto-immunes',
 ];
 
+const SelectField: React.FC<SelectFieldProps> = ({ icon, label, name, value, onChange, options }) => {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        {icon}
+        <label className="text-sm font-medium text-gray-700">{label}</label>
+      </div>
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      >
+        <option value="">Sélectionner...</option>
+        {options.map(option => (
+          <option key={option} value={option}>{option}</option>
+        ))}
+      </select>
+    </div>
+  );
+};
+
+const RadioField: React.FC<RadioFieldProps> = ({ icon, label, name, value, onChange }) => {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        {icon}
+        <label className="text-sm font-medium text-gray-700">{label}</label>
+      </div>
+      <div className="flex gap-4">
+        <label className="inline-flex items-center">
+          <input
+            type="radio"
+            name={name}
+            checked={value === true}
+            onChange={() => onChange(prev => ({ ...prev, [name]: true }))}
+            className="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+          />
+          <span className="ml-2 text-sm text-gray-700">Oui</span>
+        </label>
+        <label className="inline-flex items-center">
+          <input
+            type="radio"
+            name={name}
+            checked={value === false}
+            onChange={() => onChange(prev => ({ ...prev, [name]: false }))}
+            className="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+          />
+          <span className="ml-2 text-sm text-gray-700">Non</span>
+        </label>
+      </div>
+    </div>
+  );
+};
+
 function FormPage() {
   const router = useRouter()
   const [formData, setFormData] = useState<FormData>({
@@ -140,7 +227,7 @@ function FormPage() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-      const response = await fetch('http://localhost:3000/generate', {
+      const response = await fetch('http://192.168.56.1:3000/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -161,311 +248,169 @@ function FormPage() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-[500px] mx-auto p-4 bg-gray-50 rounded-md shadow-6dp-v2">
-      <div className="grid grid-cols-1  gap-8">       
-        <div className="flex  gap-4 justify-between">
-        <div >
-          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">De</label>
-          <input
-            type="date"
-            id="startDate"
-            name="startDate"
-            value={formData.startDate}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">A</label>
-          <input
-            type="date"
-            id="endDate"
-            name="endDate"
-            value={formData.endDate}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            required
-          />
-        </div>
-        </div>
-
-
-        <div>
-          <label htmlFor="symptoms" className="block text-sm font-medium text-gray-700">Symptoms</label>
-          <select
-            id="symptoms"
-            name="symptoms"
-            value={formData.symptoms}
-            onChange={handleChange}
-            className="mt-1 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          >
-            <option value="">Select symptom</option>
-            {symptomsList.map(symptom => (
-              <option key={symptom} value={symptom}>{symptom}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="disease" className="block text-sm font-medium text-gray-700">Disease</label>
-          <select
-            id="disease"
-            name="disease"
-            value={formData.disease}
-            onChange={handleChange}
-            className="mt-1 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          >
-            <option value="">Select disease</option>
-            {diseasesList.map(disease => (
-              <option key={disease} value={disease}>{disease}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="allergies" className="block text-sm font-medium text-gray-700">Allergies</label>
-          <select
-            id="allergies"
-            name="allergies"
-            value={formData.allergies}
-            onChange={handleChange}
-            className="mt-1 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          >
-            <option value="">Select allergy</option>
-            {allergiesList.map(allergy => (
-              <option key={allergy} value={allergy}>{allergy}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="familyHistory" className="block text-sm font-medium text-gray-700">Family History</label>
-          <select
-            id="familyHistory"
-            name="familyHistory"
-            value={formData.familyHistory}
-            onChange={handleChange}
-            className="mt-1 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          >
-            <option value="">Select family history</option>
-            {familyHistoryList.map(history => (
-              <option key={history} value={history}>{history}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="obstetricalHistory" className="block text-sm font-medium text-gray-700">Obstetrical History</label>
-          <div className="mt-2">
-            <label className="inline-flex items-center">
+    <Card className="w-full max-w-4xl mx-auto">
+      <CardContent className="p-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Période */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-accent-800"/>
+                <label className="text-sm font-medium text-gray-700">Date de début</label>
+              </div>
               <input
-                type="radio"
-                name="obstetricalHistory"
-                value="true"
-                checked={formData.obstetricalHistory === true}
-                onChange={() => setFormData(prev => ({ ...prev, obstetricalHistory: true }))}
-                className="form-radio h-4 w-4 text-indigo-600"
+                type="date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                required
               />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center ml-6">
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-accent-800" />
+                <label className="text-sm font-medium text-gray-700">Date de fin</label>
+              </div>
               <input
-                type="radio"
-                name="obstetricalHistory"
-                value="false"
-                checked={formData.obstetricalHistory === false}
-                onChange={() => setFormData(prev => ({ ...prev, obstetricalHistory: false }))}
-                className="form-radio h-4 w-4 text-indigo-600"
+                type="date"
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                required
               />
-              <span className="ml-2">No</span>
-            </label>
+            </div>
           </div>
-        </div>
 
-        <div>
-          <label htmlFor="surgery" className="block text-sm font-medium text-gray-700">Surgery</label>
-          <div className="mt-2">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="surgery"
-                value="true"
-                checked={formData.surgery === true}
-                onChange={() => setFormData(prev => ({ ...prev, surgery: true }))}
-                className="form-radio h-4 w-4 text-indigo-600"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center ml-6">
-              <input
-                type="radio"
-                name="surgery"
-                value="false"
-                checked={formData.surgery === false}
-                onChange={() => setFormData(prev => ({ ...prev, surgery: false }))}
-                className="form-radio h-4 w-4 text-indigo-600"
-              />
-              <span className="ml-2">No</span>
-            </label>
+          {/* Principaux champs */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <SelectField
+              icon={<Thermometer className="w-4 h-4 text-red-800" />}
+              label="Symptômes"
+              name="symptoms"
+              value={formData.symptoms}
+              onChange={handleChange}
+              options={symptomsList}
+            />
+
+            <SelectField
+              icon={<Activity className="w-4 h-4 text-emerald-950" />}
+              label="Maladie"
+              name="disease"
+              value={formData.disease}
+              onChange={handleChange}
+              options={diseasesList}
+            />
+
+            <SelectField
+              icon={<AlertCircle className="w-4 h-4 text-green-500" />}
+              label="Allergies"
+              name="allergies"
+              value={formData.allergies}
+              onChange={handleChange}
+              options={allergiesList}
+            />
+
+            <SelectField
+              icon={<Users className="w-4 h-4 text-purple-500" />}
+              label="Antécédents familiaux"
+              name="familyHistory"
+              value={formData.familyHistory}
+              onChange={handleChange}
+              options={familyHistoryList}
+            />
           </div>
-        </div>
 
-        <div>
-          <label htmlFor="currentTreatment" className="block text-sm font-medium text-gray-700">Current Treatment</label>
-          <input
-            type="text"
-            id="currentTreatment"
-            name="currentTreatment"
-            value={formData.currentTreatment}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
-        </div>
+          {/* Champs booléens */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <RadioField
+              icon={<Heart className="w-4 h-4 text-red-500" />}
+              label="Antécédents obstétriques"
+              name="obstetricalHistory"
+              value={formData.obstetricalHistory}
+              onChange={setFormData}
+            />
 
-        <div>
-          <label htmlFor="physicalDiagnosis" className="block text-sm font-medium text-gray-700">Physical Diagnosis</label>
-          <select
-            id="physicalDiagnosis"
-            name="physicalDiagnosis"
-            value={formData.physicalDiagnosis}
-            onChange={handleChange}
-            className="mt-1 py-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            <RadioField
+              icon={<Waypoints className="w-4 h-4 text-gray-500" />}
+              label="Chirurgie"
+              name="surgery"
+              value={formData.surgery}
+              onChange={setFormData}
+            />
+
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Pill className="w-4 h-4 text-gray-500" />
+                <label className="text-sm font-medium text-gray-700">Traitement actuel</label>
+              </div>
+              <input
+                type="text"
+                name="currentTreatment"
+                value={formData.currentTreatment}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+          </div>
+
+          {/* Mode de vie */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <RadioField
+              icon={<Plane className="w-4 h-4 text-blue-800" />}
+              label="Voyage"
+              name="travel"
+              value={formData.travel}
+              onChange={setFormData}
+            />
+
+            <RadioField
+              icon={<FaRunning className="w-4 h-4 text-gray-500" />}
+              label="Activité physique"
+              name="physicalActivity"
+              value={formData.physicalActivity}
+              onChange={setFormData}
+            />
+
+            <RadioField
+              icon={<Wine className="w-4 h-4 text-gray-500" />}
+              label="Dépendance"
+              name="dependency"
+              value={formData.dependency}
+              onChange={setFormData}
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full md:w-auto px-6 py-3 bg-accent-600 text-white-50 rounded-md font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
           >
-            <option value="">Select physical diagnosis</option>
-            {diagnosisList.map(diagnosis => (
-              <option key={diagnosis} value={diagnosis}>{diagnosis}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Travel</label>
-          <div className="mt-2">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="travel"
-                value="true"
-                checked={formData.travel === true}
-                onChange={() => setFormData(prev => ({ ...prev, travel: true }))}
-                className="form-radio h-4 w-4 text-indigo-600"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center ml-6">
-              <input
-                type="radio"
-                name="travel"
-                value="false"
-                checked={formData.travel === false}
-                onChange={() => setFormData(prev => ({ ...prev, travel: false }))}
-                className="form-radio h-4 w-4 text-indigo-600"
-              />
-              <span className="ml-2">No</span>
-            </label>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Physical Activity</label>
-          <div className="mt-2">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="physicalActivity"
-                value="true"
-                checked={formData.physicalActivity === true}
-                onChange={() => setFormData(prev => ({ ...prev, physicalActivity: true }))}
-                className="form-radio h-4 w-4 text-indigo-600"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center ml-6">
-              <input
-                type="radio"
-                name="physicalActivity"
-                value="false"
-                checked={formData.physicalActivity === false}
-                onChange={() => setFormData(prev => ({ ...prev, physicalActivity: false }))}
-                className="form-radio h-4 w-4 text-indigo-600"
-              />
-              <span className="ml-2">No</span>
-            </label>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Dependency</label>
-          <div className="mt-2">
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                name="dependency"
-                value="true"
-                checked={formData.dependency === true}
-                onChange={() => setFormData(prev => ({ ...prev, dependency: true }))}
-                className="form-radio h-4 w-4 text-indigo-600"
-              />
-              <span className="ml-2">Yes</span>
-            </label>
-            <label className="inline-flex items-center ml-6">
-              <input
-                type="radio"
-                name="dependency"
-                value="false"
-                checked={formData.dependency === false}
-                onChange={() => setFormData(prev => ({ ...prev, dependency: false }))}
-                className="form-radio h-4 w-4 text-indigo-600"
-              />
-              <span className="ml-2">No</span>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-6">
-        <button
-          type="submit"
-          className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white-50 bg-accent-600 hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500"
-        >
-          Envoyer
-        </button>
-      </div>
-    </form>
-  )
+            Générer
+          </button>
+        </form>
+      </CardContent>
+    </Card>
+  );
 }
 
-
-
+// Composants réutilisables
 
 export default function ClinicalCaseForm() {
   return (
-    <div>
+    <div className="min-h-screen bg-accent-50">
       <Header />
-      <section className="flex flex-col items-start w-full min-h-screen bg-white-50 px-4 sm:px-6 md:px-8 lg:px-28 py-16 ">
-        <div className="flex flex-col w-full justify-center gap-8 sm:gap-12 md:gap-14 lg:gap-8 mx-auto">
-          <div className="flex flex-col gap-2 ">
-            <section className="w-full pt-12 px-4 sm:px-6 md:px-8">
-              <div className="max-w-4xl mx-auto">
-                <div className="text-center mb-10 sm:mb-16">
-                  <p className="text-2xl sm:text-3xl md:text-4xl font-semibold font-satoshi text-black-100 mb-4">
-                    Entrez les caractéristiques de cas cliniques
-                  </p>
-                  <p className="text-base sm:text-lg font-inter text-black-400 max-w-2xl mx-auto">
-                    Remplissez ce formulaire pour obtenir des cas cliniques
-                    adaptés à votre contexte.
-                  </p>
-                </div>
-                <div className="flex flex-col items-center mx-auto">
-                  <FormPage />
-                </div>
-              </div>
-            </section>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="text-center mb-12">
+          <p className="text-3xl font-semibold text-gray-900 sm:text-4xl">
+            Génération de cas cliniques
+          </p>
+          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+            Remplissez ce formulaire pour obtenir des cas cliniques adaptés à votre contexte.
+          </p>
         </div>
-      </section>
+        <FormPage />
+      </div>
     </div>
   );
 }
