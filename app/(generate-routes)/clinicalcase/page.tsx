@@ -3,6 +3,7 @@
 import { Header } from "@/components/Header";
 import { useEffect, useState } from "react";
 
+
 interface Lifestyle {
   addiction: Array<{ name: string; frequency: string; duration: string }>;
   physicalActivity: Array<{ name: string; frequency: string }>;
@@ -127,11 +128,11 @@ export default function Home() {
                     Affichage de cas cliniques
                   </p>
                   <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-                    Remplissez ce formulaire pour obtenir des cas cliniques adaptés à votre contexte.
+                    Ayez un appercu de tous les cas cliniques disponibles
                   </p>
                 </div>
     <div className="p-4">
-    <div className="grid grid-cols-1 md:grid-cols-2  gap-8 max-w-2xl mx-auto">
+    <div className="grid grid-cols-1 md:grid-cols-4  gap-8  mx-auto">
   {Object.entries(clinicalCases).map(([id, caseData]) => (
     <div key={id} className="p-4 border rounded shadow bg-white-50">
       <h2 className="text-xl font-semibold">

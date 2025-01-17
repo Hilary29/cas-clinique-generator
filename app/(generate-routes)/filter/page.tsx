@@ -165,7 +165,7 @@ export default function Home() {
         >
           Back to List
         </button>
-        <ClinicalCaseDetails caseData={caseData} />
+        {/* <ClinicalCaseDetails caseData={caseData} /> */}
       </div>
     );
   }
@@ -401,7 +401,7 @@ export default function Home() {
   );
 }
 
-function ClinicalCaseDetails({ caseData }: { caseData: ClinicalCase }) {
+/* function ClinicalCaseDetails({ caseData }: { caseData: ClinicalCase }) {
   return (
     <div>
       <h1 className="text-2xl font-bold">Case Details</h1>
@@ -449,3 +449,4 @@ function ClinicalCaseDetails({ caseData }: { caseData: ClinicalCase }) {
     </div>
   );
 }
+ */

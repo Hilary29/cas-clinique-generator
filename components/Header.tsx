@@ -4,6 +4,7 @@ import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import Hamburger from "hamburger-react"
+import { FaUser } from "react-icons/fa";
 
 
 
@@ -104,7 +105,7 @@ export function Header() {
               size={26}
             />
           </div>
-          <Link className="flex items-center" href={"/"}>
+          <Link className="flex items-center" href={"/filter"}>
             <Image src={logo} alt="Agrinet logo" className="w-12 h-[28px] sm:w-8 sm:h-[24px] lg:w-16 lg:h-[48px]" />
             <p className="font-poppins text-paragraph-md sm:text-heading-desktop-h6 lg:text-heading-desktop-h4 font-semibold text-left text-accent-900">
               CasClinique
@@ -199,11 +200,7 @@ export function Header() {
             </>
           ) : (
             // Exemple de contenu affiché si authentifié
-            <Link
-              className="hidden md:flex text-black-100 hover:text-accent-500 transition-colors duration-300"
-              href={"/dashboard"}>
-              Dashboard
-            </Link>
+           <FaUser className="W-8 h-8 "/>
           )}
           <LanguageSwitcher />
         </div>

@@ -97,7 +97,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
             Formulaire
           </Link>
           <Link
-            href="/home"
+            href="/clinicalcase"
             className=" hover:text-accent-500 transition-colors"
             onClick={onClose}
           >
