@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation"; // Importer useRouter
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 const Page = () => {
+  const router = useRouter(); // Initialiser useRouter
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,8 +37,9 @@ const Page = () => {
         throw new Error("Failed to sign up");
       }
 
-      // Handle success (e.g., redirect to login or homepage)
+      // Si l'inscription réussit, rediriger vers la page de login
       console.log("User registered successfully!");
+      router.push("/login");
     } catch (error) {
       setError("An error occurred. Please try again.");
     } finally {
@@ -117,7 +120,9 @@ const Page = () => {
                   >
                     {loading ? "Signing up..." : "Signup"}
                   </Button>
-                  {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+                  {error && (
+                    <p className="text-red-500 text-center mt-2">{error}</p>
+                  )}
                 </div>
               </div>
             </form>

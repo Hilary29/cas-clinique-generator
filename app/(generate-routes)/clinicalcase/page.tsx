@@ -2,7 +2,7 @@
 
 import { Header } from "@/components/Header";
 import { useEffect, useState } from "react";
-
+import { ChevronRightCircle } from "lucide-react";
 
 interface Lifestyle {
   addiction: Array<{ name: string; frequency: string; duration: string }>;
@@ -141,10 +141,11 @@ export default function Home() {
       </h2>
       <p>Raison: {caseData?.consultationReason || "No reason provided"}</p>
       <button
-        className="mt-2 px-4 py-2 bg-accent-600 text-white-50 rounded"
+        className="flex gap-2 mt-2  py-2 text-accent-600 text-paragraph-md font-semibold  "
         onClick={() => setSelectedCaseId(id)}
       >
         Plus de details
+        <ChevronRightCircle />
       </button>
     </div>
   ))}

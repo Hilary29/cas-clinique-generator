@@ -4,8 +4,8 @@
 import { X } from 'lucide-react'
 import Image from "next/image"
 import Link from "next/link"
+import { FaHome, FaClipboard, FaList, FaHistory, FaQuestionCircle } from 'react-icons/fa'
 import logo from "../public/images/logo2.png"
-
 import {
   Sheet,
   SheetContent,
@@ -70,7 +70,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="left" className="w-[300px] sm:w-[400px] text-paragraph-md font-inter font-regular bg-white-50">
         <SheetHeader>
-          <SheetTitle className="flex items-center justify-between text-paragraph-md font-inter font-regular">
+          <SheetTitle className="flex items-center justify-between  text-paragraph-md font-inter font-regular">
           <Link className="flex items-center gap-2" href={"/"}>
           <Image src={logo} alt="Agrinet logo" className=" w-8 h-[24px] " />
             <p className="font-poppins text-heading-desktop-h6  font-semibold text-left text-secondary-700">
@@ -80,41 +80,41 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
           </SheetTitle>
         </SheetHeader>
-        <div className="flex flex-col gap-8 mt-8 ml-10 text-paragraph-md font-inter font-regular">
+        <div className="flex flex-col text-secondary-500 gap-8 mt-8 ml-10 text-heading-desktop-h5 font-inter font-semibold">
           <Link
-            href="/"
-            className=" hover:text-accent-500 transition-colors"
+            href="/clinicalcase"
+            className="flex gap-3 hover:text-accent-500 hover:bg-gray-200 py-2 transition-colors"
             onClick={onClose}
-          >
-            Home
+          ><FaHome/>
+            Accueil 
           </Link>
 
           <Link
             href="/filter"
-            className=" hover:text-accent-500 transition-colors"
+            className="flex gap-3 hover:text-accent-500 hover:bg-gray-200 py-2 transition-colors"
             onClick={onClose}
-          >
-            Formulaire
+          ><FaClipboard/>
+            Formulaire 
           </Link>
           <Link
             href="/clinicalcase"
-            className=" hover:text-accent-500 transition-colors"
+            className="flex gap-3 hover:text-accent-500 hover:bg-gray-200 py-2 transition-colors"
             onClick={onClose}
-          >
+          ><FaList/>
             Resultat
           </Link>
           <Link
             href="/history"
-            className=" hover:text-accent-500 transition-colors"
+            className="flex gap-3 hover:text-accent-500 hover:bg-gray-200 py-2 transition-colors"
             onClick={onClose}
-          >
+          ><FaHistory/>
             Historique
           </Link>
           <Link
             href="/help"
-            className=" hover:text-accent-500 transition-colors"
+            className="flex gap-3 hover:text-accent-500 hover:bg-gray-200 py-2 transition-colors"
             onClick={onClose}
-          >
+          ><FaQuestionCircle/>
             Aide
           </Link>
         </div>
