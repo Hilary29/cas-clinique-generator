@@ -4,7 +4,7 @@
 import { X } from 'lucide-react'
 import Image from "next/image"
 import Link from "next/link"
-import { FaHome, FaClipboard, FaList, FaHistory, FaQuestionCircle } from 'react-icons/fa'
+import { FaHome, FaFilter, FaClipboard, FaList, FaHistory, FaQuestionCircle } from 'react-icons/fa'
 import logo from "../public/images/logo2.png"
 import {
   Sheet,
@@ -93,8 +93,8 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
             href="/filter"
             className="flex gap-3 hover:text-accent-500 hover:bg-gray-200 py-2 transition-colors"
             onClick={onClose}
-          ><FaClipboard/>
-            Formulaire 
+          ><FaFilter/>
+            Filtre 
           </Link>
           <Link
             href="/clinicalcase"

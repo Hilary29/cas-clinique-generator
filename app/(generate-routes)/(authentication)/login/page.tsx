@@ -25,7 +25,7 @@ const Page = () => {
     if (res.ok) {
       const data = await res.json();
       localStorage.setItem("token", data.token); // Stocker le token dans le localStorage
-      window.location.href = "/filter"; // Rediriger l'utilisateur après la connexion
+      window.location.href = "/clinicalcase"; // Rediriger l'utilisateur après la connexion
     } else {
       const errorData = await res.json();
       setError(errorData.message || "An error occurred");
@@ -46,9 +46,9 @@ const Page = () => {
         </div>
 
         <div className="mx-auto w-[25%] min-w-[350px] bg-white-50 p-2 border-none rounded-sm">
-          <div className="text-2xl text-secondary-500 text-center">Login</div>
+          <div className="text-2xl font-semibold pb-4 text-accent-900 text-center">Connexion</div>
           {error && <p className="text-red-500 text-center">{error}</p>}
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleLogin} className="flex flex-col gap-8">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -61,7 +61,7 @@ const Page = () => {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Mot de Passe</Label>
               <Input
                 id="password"
                 type="password"
@@ -71,15 +71,15 @@ const Page = () => {
               />
             </div>
             <div className="grid gap-2">
-              <Button type="submit" className="w-full bg-accent-600 text-white-100">
-                Login
+              <Button type="submit" className="w-full bg-accent-600 text-white-50 hover:bg-accent-700">
+                Se Connecter
               </Button>
             </div>
           </form>
-          <p className="text-center">
-            Don&apos;t have an account?{" "}
+          <p className="text-center text-accent-600">
+            Vous n'avez pas de compte?{" "}
             <Link href="/register" className="underline">
-              Sign up
+              Inscrivez-vous
             </Link>
           </p>
         </div>

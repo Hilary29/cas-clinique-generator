@@ -141,13 +141,13 @@ export function HeaderHome() {
                 className="hidden md:flex text-black-100 hover:text-accent-500 transition-colors duration-300"
                 href={"/login"}
               >
-                Login
+                Se Connecter
               </Link>
               <Link
                 className="items-center bg-accent-700 text-white-50 px-1.5 py-1 md:px-3 md:py-2 rounded-md hover:bg-accent-600 transition-colors duration-300"
                 href={"/register"}
               >
-                Sign up
+                S'Inscrire
               </Link>
             </>
           ) : (

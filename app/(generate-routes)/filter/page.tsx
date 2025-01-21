@@ -2,6 +2,11 @@
 
 import { Header } from "@/components/Header";
 import { useEffect, useState } from "react";
+import { utils as XLSXUtils, write as XLSXWrite } from 'xlsx';
+import { Parser } from 'json2csv';
+import { create } from 'xmlbuilder2';
+import { ClinicalCaseCard } from './ClinicalCaseCard';
+import { Button } from "@/components/ui/button"
 
 
 interface Lifestyle {
@@ -84,9 +89,27 @@ export default function Home() {
     addiction: "any",
     physicalActivity: "any",
     travel: "any",
+    sex: "any",
   });
-
   const [exportFormat, setExportFormat] = useState<string>("json");
+  const [showCases, setShowCases] = useState(false);
+
+  const getFieldIcon = (field: string) => {
+    const icons: Record<string, string> = {
+      surgery: '🏥',
+      pregnancies: '🤰',
+      addiction: '🍷',
+      physicalActivity: '🏃',
+      travel: '✈️',
+      sex: '👤',
+    };
+    return icons[field] || '';
+  };
+
+  const getFieldLabel = (field: string) => {
+    return field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1');
+  };
+
 
   useEffect(() => {
     const fetchClinicalCases = async () => {
@@ -112,6 +135,7 @@ export default function Home() {
   const filteredCases = Object.entries(clinicalCases).filter(
     ([id, caseData]) => {
       const lifestyle = caseData.lifestyle || {};
+      const personalData = caseData.personalData || {};
 
       if (filter.surgery === "no" && caseData.medicalHistory?.surgeries?.length)
         return false;
@@ -149,6 +173,10 @@ export default function Home() {
       )
         return false;
 
+      if (filter.sex !== "any" && personalData.sex !== filter.sex) {
+        return false;
+      }
+
       return true;
     }
   );
@@ -170,7 +198,7 @@ export default function Home() {
     );
   }
 
-  const exportFilteredCases = (cases: [string, ClinicalCase][]) => {
+  const exportFilteredCases = async (cases: [string, ClinicalCase][]) => {
     const formattedData = cases.map(([id, caseData]) => ({
       id,
       ...caseData,
@@ -188,7 +216,7 @@ export default function Home() {
         contentType = "application/xml";
         break;
       case "csv":
-        const csvData = convertToCSV(formattedData);
+        const csvData = await convertToCSV(formattedData);
         blob = new Blob([csvData], { type: "text/csv" });
         fileExtension = "csv";
         contentType = "text/csv";
@@ -216,187 +244,118 @@ export default function Home() {
     URL.revokeObjectURL(url);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const convertToCSV = (data: any[]) => {
-    const headers = Object.keys(data[0]).join(",");
-    const rows = data.map((row) => Object.values(row).join(",")).join("\n");
-    return `${headers}\n${rows}`;
+  const convertToCSV = async (data: any[]) => {
+    const json2csvParser = new Parser();
+    return json2csvParser.parse(data);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const convertToXML = (data: any[]) => {
-    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<clinicalCases>';
+    const root = create({ version: '1.0', encoding: 'UTF-8' })
+      .ele('clinicalCases');
+
     data.forEach((item) => {
-      xml += "\n  <clinicalCase>";
-      Object.keys(item).forEach((key) => {
-        xml += `\n    <${key}>${item[key]}</${key}>`;
+      const caseElement = root.ele('clinicalCase');
+      Object.entries(item).forEach(([key, value]) => {
+        caseElement.ele(key).txt(String(value));
       });
-      xml += "\n  </clinicalCase>";
     });
-    xml += "\n</clinicalCases>";
-    return xml;
+
+    return root.end({ prettyPrint: true });
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const convertToXLSX = (data: any[]) => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const XLSX = require("xlsx");
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Clinical Cases");
-    return XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const ws = XLSXUtils.json_to_sheet(data);
+    const wb = XLSXUtils.book_new();
+    XLSXUtils.book_append_sheet(wb, ws, "Clinical Cases");
+    return XLSXWrite(wb, { bookType: "xlsx", type: "array" });
   };
 
   
 
   return (
-        <div className="min-h-screen bg-accent-50">
-          <Header />
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-            <div className="text-center mb-12">
-              <p className="text-3xl font-semibold text-gray-900 sm:text-4xl">
-                Génération de cas cliniques
-              </p>
-              <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-                Remplissez ce formulaire pour obtenir des cas cliniques adaptés à votre contexte.
-              </p>
-            </div>
-    <div className="p-4 ">
-
-      {/* Filter Form */}
-      <form className="max-w-xl mx-auto p-6 bg-white-50 rounded-xl shadow-lg space-y-8 md:gap-6">
-        {/* Surgery Field */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            🏥 Surgery
-          </label>
-          <select
-            name="surgery"
-            value={filter.surgery}
-            onChange={handleFilterChange}
-            className="w-full rounded-lg border-gray-300 bg-gray-50 py-2.5 px-4 text-gray-900 shadow-sm transition duration-200 ease-in-out hover:bg-gray-100 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
-          >
-            <option value="any"></option>
-            <option value="no">No surgery</option>
-            <option value="yes">Surgery</option>
-          </select>
+    <div className="min-h-screen bg-gradient-to-b from-white-50 to-blue-50">
+      <Header />
+      <main className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
+        <div className="text-center mt-12">
+          <p className="font-semibold text-heading-desktop-h2 text-gray-900 ">
+            Génération de cas cliniques
+          </p>
+          <p className="my-8 text-xl text-gray-600 max-w-3xl mx-auto">
+            Remplissez ce formulaire pour obtenir des cas cliniques adaptés à votre contexte.
+          </p>
         </div>
 
-        {/* Pregnancies Field */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            🤰 Pregnancies
-          </label>
-          <select
-            name="pregnancies"
-            value={filter.pregnancies}
-            onChange={handleFilterChange}
-            className="w-full rounded-lg border-gray-300 bg-gray-50 py-2.5 px-4 text-gray-900 shadow-sm transition duration-200 ease-in-out hover:bg-gray-100 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
-          >
-            <option value="any"></option>
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </select>
+        <div className="max-w-2xl mx-auto bg-white-50 rounded-xl shadow-lg overflow-hidden">
+          <form className="p-6 space-y-6 ">
+            {['surgery', 'pregnancies', 'addiction', 'physicalActivity', 'travel', 'sex'].map((field) => (
+              <div key={field} className="space-y-2">
+                <label htmlFor={field} className="block font-medium text-paragraph-lg text-gray-700">
+                  {getFieldIcon(field)} {getFieldLabel(field)}
+                </label>
+                <select
+                  id={field}
+                  name={field}
+                  value={filter[field as keyof typeof filter]}
+                  onChange={handleFilterChange}
+                  className="w-full rounded-lg border-gray-300 bg-gray-50 py-2.5 px-4 text-gray-900 shadow-sm transition duration-200 ease-in-out hover:bg-gray-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                >
+                  <option value="any"></option>
+                  {field === 'sex' ? (
+                    <>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="no">No</option>
+                      <option value="yes">Yes</option>
+                    </>
+                  )}
+                </select>
+              </div>
+            ))}
+          </form>
         </div>
 
-        {/* Addiction Field */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            🍷 Addiction
-          </label>
-          <select
-            name="addiction"
-            value={filter.addiction}
-            onChange={handleFilterChange}
-            className="w-full rounded-lg border-gray-300 bg-gray-50 py-2.5 px-4 text-gray-900 shadow-sm transition duration-200 ease-in-out hover:bg-gray-100 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
-          >
-            <option value="any"></option>
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </select>
-        </div>
-
-        {/* Physical Activity Field */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            🏃 Physical Activity
-          </label>
-          <select
-            name="physicalActivity"
-            value={filter.physicalActivity}
-            onChange={handleFilterChange}
-            className="w-full rounded-lg border-gray-300 bg-gray-50 py-2.5 px-4 text-gray-900 shadow-sm transition duration-200 ease-in-out hover:bg-gray-100 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
-          >
-            <option value="any"></option>
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </select>
-        </div>
-
-        {/* Travel Field */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            ✈️ Travel
-          </label>
-          <select
-            name="travel"
-            value={filter.travel}
-            onChange={handleFilterChange}
-            className="w-full rounded-lg border-gray-300 bg-gray-50 py-2.5 px-4 text-gray-900 shadow-sm transition duration-200 ease-in-out hover:bg-gray-100 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
-          >
-            <option value="any"></option>
-            <option value="no">No</option>
-            <option value="yes">Yes</option>
-          </select>
-        </div>
-        <div className="flex flex-row justify-end mt-4 gap-2 ">
-        <div className="space-y-2 py-auto">
-          <label className="block text-sm font-medium text-gray-700 "></label>
-          <select
-            name="exportFormat"
-            onChange={(e) => setExportFormat(e.target.value)}
-            className="w-full rounded-lg border-gray-300 bg-gray-50 py-2 px-4 text-gray-900 shadow-sm transition duration-200 ease-in-out hover:bg-gray-100 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
-          >
-            <option value="json">JSON</option>
-            <option value="csv">CSV</option>
-            <option value="xml">XML</option>
-            <option value="xlsx">XLSX</option>
-          </select>
-        </div>
-
-
-        <button
-        onClick={() => exportFilteredCases(filteredCases)}
-        className=" px-3 py-2 bg-accent-600 text-white-50 rounded-lg"
-      >
-        Exporter
-      </button>
-</div>
-      </form>
-
-{/*       <div className="grid gap-4 mt-4 max-w-xl mx-auto">
-        {filteredCases.map(([id, caseData]) => (
-          <div key={id} className="p-4 border rounded shadow">
-            <h2 className="text-xl font-semibold">
-              {caseData?.diagnostic?.name || "Unknown Diagnostic"} -{" "}
-              {caseData?.personalData?.profession || "Unknown Profession"}
-            </h2>
-            <p>
-              Reason: {caseData?.consultationReason || "No reason provided"}
-            </p>
-            <button
-              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-              onClick={() => setSelectedCaseId(id)}
+        <div className="max-w-2xl mx-auto mt-8 p-6 bg-gray-50 rounded-xl shadow-lg">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Cas cliniques filtrés</h2>
+          <div className="flex items-center space-x-4 mb-4">
+            <Button
+              onClick={() => setShowCases(!showCases)}
+              className="px-6 py-2.5 bg-accent-600 text-white-50 font-medium rounded-md shadow-md hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300 ease-in-out"
             >
-              View Details
-            </button>
+              {showCases ? 'Masquer les cas' : 'Afficher les cas'}
+            </Button>
           </div>
-        ))}
-      </div> */}
+          {showCases && (
+            <div className="mb-8">
+              {filteredCases.map(([id, caseData]) => (
+                <ClinicalCaseCard key={id} caseData={caseData} />
+              ))}
+            </div>
+          )}
+          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Exporter les cas filtrés</h2>
+          <div className="flex items-center space-x-4">
+            <select
+              name="exportFormat"
+              onChange={(e) => setExportFormat(e.target.value)}
+              className="flex-grow rounded-lg border-gray-300 bg-white py-2.5 px-4 text-gray-900 shadow-sm transition duration-200 ease-in-out hover:bg-gray-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            >
+              <option value="json">JSON</option>
+              <option value="csv">CSV</option>
+              <option value="xml">XML</option>
+              <option value="xlsx">XLSX</option>
+            </select>
+            <Button
+              onClick={() => exportFilteredCases(filteredCases)}
+              className="px-6 py-2.5 bg-accent-600 text-white-50 font-medium rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300 ease-in-out"
+            >
+              Exporter
+            </Button>
+          </div>
+        </div>
+      </main>
     </div>
-    </div>
-    </div>
-  
 
   );
 }
@@ -450,3 +409,4 @@ export default function Home() {
   );
 }
  */
+

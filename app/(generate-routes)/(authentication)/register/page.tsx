@@ -64,7 +64,7 @@ const Page = () => {
         {/* Section Card */}
         <Card className="flex flex-col justify-center w-[60%] h-full bg-[#ffffff] border-none">
           <CardHeader>
-            <CardTitle className="text-2xl text-secondary-500 mx-auto">
+            <CardTitle className="text-2xl text-accent-900 mx-auto">
               Signup
             </CardTitle>
           </CardHeader>
@@ -73,7 +73,7 @@ const Page = () => {
               <div className="grid gap-8 font-regular text-paragraph-md font-inter">
                 <div className="grid gap-2">
                   <Label htmlFor="name" className="text-black-300">
-                    Name
+                    Nom
                   </Label>
                   <Input
                     id="name"
@@ -101,7 +101,7 @@ const Page = () => {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="password" className="text-black-300">
-                    Password
+                    Mot de Passe
                   </Label>
                   <Input
                     id="password"
@@ -115,10 +115,10 @@ const Page = () => {
                 <div className="grid gap-2">
                   <Button
                     type="submit"
-                    className="w-full font-semibold text-white-50 font-inter hover:bg-active-700 bg-active-600"
+                    className="w-full font-semibold text-white-50 font-inter bg-accent-600 hover:bg-accent-700"
                     disabled={loading}
                   >
-                    {loading ? "Signing up..." : "Signup"}
+                    {loading ? "Inscription en cours..." : "Inscription"}
                   </Button>
                   {error && (
                     <p className="text-red-500 text-center mt-2">{error}</p>
@@ -126,10 +126,10 @@ const Page = () => {
                 </div>
               </div>
             </form>
-            <div className="mt-4 text-center text-sm text-accent-600">
-              Already have an account?{" "}
+            <div className="mt-4 text-center text-sm text-accent-600 ">
+              Vous avez deja un compte ?{" "}
               <Link href="/login" className="underline">
-                Log in
+                Connectez-vous
               </Link>
             </div>
           </CardContent>

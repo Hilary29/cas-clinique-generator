@@ -72,7 +72,9 @@ interface ClinicalCase {
 }
 
 export default function Home() {
-  const [clinicalCases, setClinicalCases] = useState<Record<string, ClinicalCase>>({});
+  const [clinicalCases, setClinicalCases] = useState<
+    Record<string, ClinicalCase>
+  >({});
   const [loading, setLoading] = useState(true);
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
 
@@ -120,39 +122,40 @@ export default function Home() {
   }
 
   return (
-            <div className="min-h-screen bg-accent-50">
-              <Header />
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-                <div className="text-center mb-12">
-                  <p className="text-3xl font-semibold text-gray-900 sm:text-4xl">
-                    Affichage de cas cliniques
-                  </p>
-                  <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-                    Ayez un appercu de tous les cas cliniques disponibles
-                  </p>
-                </div>
-    <div className="p-4">
-    <div className="grid grid-cols-1 md:grid-cols-4  gap-8  mx-auto">
-  {Object.entries(clinicalCases).map(([id, caseData]) => (
-    <div key={id} className="p-4 border rounded shadow bg-white-50">
-      <h2 className="text-xl font-semibold">
-        {caseData?.diagnostic?.name || "Unknown Diagnostic"} -{" "}
-        {caseData?.personalData?.profession || "Unknown Profession"}
-      </h2>
-      <p>Raison: {caseData?.consultationReason || "No reason provided"}</p>
-      <button
-        className="flex gap-2 mt-2  py-2 text-accent-600 text-paragraph-md font-semibold  "
-        onClick={() => setSelectedCaseId(id)}
-      >
-        Plus de details
-        <ChevronRightCircle />
-      </button>
-    </div>
-  ))}
-</div>
-
-    </div>
-    </div>
+    <div className="min-h-screen bg-gradient-to-b from-white-50 to-blue-50">
+      <Header />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="text-center mb-12">
+          <p className="text-3xl font-semibold text-gray-900 sm:text-4xl">
+            Affichage de cas cliniques
+          </p>
+          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+            Ayez un appercu de tous les cas cliniques disponibles
+          </p>
+        </div>
+        <div className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-4  gap-8  mx-auto">
+            {Object.entries(clinicalCases).map(([id, caseData]) => (
+              <div key={id} className="p-4 border rounded shadow bg-white-50">
+                <h2 className="text-xl font-semibold">
+                  {caseData?.diagnostic?.name || "Unknown Diagnostic"} -{" "}
+                  {caseData?.personalData?.profession || "Unknown Profession"}
+                </h2>
+                <p>
+                  Raison de consultation: {caseData?.consultationReason || "No reason provided"}
+                </p>
+                <button
+                  className="flex gap-2 mt-2  py-2 text-accent-600 text-paragraph-md font-semibold  "
+                  onClick={() => setSelectedCaseId(id)}
+                >
+                  Plus de details
+                  <ChevronRightCircle />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
